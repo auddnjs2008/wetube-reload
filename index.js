@@ -1,1 +1,5 @@
-console.log('Hello Node.js');
+import express from "express";
+
+const app = express();
+
+console.log('Hi');
