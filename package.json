@@ -4,12 +4,14 @@
   "description": "The best way to watch videos",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon --exec babel-node index.js"
+    "dev": "nodemon --exec babel-node src/index.js"
   },
   "author": "kmw",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "pug": "^3.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
