@@ -1,8 +1,11 @@
 import express from "express";
 import logger from "morgan";
-import globalRouter from './routers/globalRouter';
+import rootRouter from './routers/rootRouter';
 import videoRouter from './routers/videoRouter';
 import userRouter from './routers/userRouter';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import { localsMiddleware } from './middleware';
 
 const app = express();
 
@@ -14,7 +17,23 @@ app.use(logger('dev'));
  * 자바스크립트 형식으로 바꿔준다.
  */
 app.use(express.urlencoded({extended:true}));
-app.use('/',globalRouter);
+app.use(session({
+    secret:process.env.COOKIE_SECRET,
+    resave:false,
+    saveUninitialized:false,
+    store:MongoStore.create({mongoUrl:process.env.DB_URL})
+}))
+
+// app.use((req, res, next) => {
+//     req.sessionStore.all((error, sessions) => {
+//       console.log(sessions);
+//       next();
+//     });
+//   });
+
+app.use(localsMiddleware);
+
+app.use('/',rootRouter);
 app.use('/videos',videoRouter);
 app.use('/users',userRouter);
 
