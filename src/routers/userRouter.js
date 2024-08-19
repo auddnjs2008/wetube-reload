@@ -13,7 +13,7 @@ userRouter.get('/github/finish',publicOnlyMiddleware,finishGithubLogin);
 
 
 
-userRouter.get(':id',see);
+userRouter.get('/:id',see);
 
 
 export default userRouter;
