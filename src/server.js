@@ -32,7 +32,7 @@ app.use(session({
 //   });
 
 app.use(localsMiddleware);
-
+app.use('/uploads', express.static('uploads'));
 app.use('/',rootRouter);
 app.use('/videos',videoRouter);
 app.use('/users',userRouter);
@@ -42,8 +42,6 @@ app.use('/users',userRouter);
 /** send를 보내게 되면 그건 미들웨어가 아니다.  */
 
 /** 어느 url에도 작동하는 global middleware를 만들어준다. */
-
-
 
 
 export default app;

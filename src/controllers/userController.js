@@ -37,9 +37,22 @@ export const getEdit = (req,res) => {
     return res.render('edit-profile',{pageTitle:'Edit Profile'});
 };
 
-export const postEdit = (req,res) => {
+export const postEdit = async (req,res) => {
+    const {session:{user:{_id:id,avatarUrl}},file} = req;
+    
+    const {name,email,username,location} =req.body;
 
-    return res.end();
+    const updatedUser = await User.findByIdAndUpdate(id,{
+        avatarUrl:file ? file.path : avatarUrl,
+        name,
+        email,
+        username,
+        location
+    },{new: true});
+
+    req.session.user = updatedUser;
+
+    return res.redirect('/users/edit');
 }
 
 
@@ -145,5 +158,40 @@ export const logout = (req,res) => {
     req.session.destroy();
     return res.redirect('/');
 };
+
+
+export const getChangePassword = (req,res) => {
+    if(req.session.user.socialOnly === true){
+        return res.redirect('/');
+    }
+
+    return res.render('change-password',{pageTitle:'Change Password'});
+}
+
+
+export const postChangePassword = async (req,res) => {
+    const {
+        session:{user:{_id,password}},
+        body:{oldPassword,newPassword,newPasswordConfirmation}} = req;
+    
+    const ok = await bcrypt.compare(oldPassword,password);
+    if(!ok){
+        return res.status(400).render('change-password',{pageTitle:'Change Password',errorMessage:'The current password is incorrect'});
+
+    }
+
+    if(newPassword !== newPasswordConfirmation){
+        return res.status(400).render('change-password',{pageTitle:'Change Password',errorMessage:'The passowrd does not match confirmatino'});
+    }
+
+    const user = await User.findById(_id);
+    user.password = newPassword;
+    await user.save();
+    req.session.user.password = user.password;
+
+
+    return res.redirect('/users/logout');
+}
+
 
 export const see = (req,res) => res.send('see');
